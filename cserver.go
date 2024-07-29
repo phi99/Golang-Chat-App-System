@@ -33,9 +33,9 @@ type client struct {
 
 func (c *client) writeMonitor() {
 	go func() {
-		for s:= range c.wchan { //once a msg is ready in the client write ch, we'll write it to the underlying client network buffer
-			c.WriteString(s+"\n") //these are mebedded functions from bufio/io packages so we can call them directly, the backslash n is to indicate End of Line. To write the content string from buffer to the writer object 
-			c.Flush() //Flushes the data to the target resource from the writer
+		for s:= range c.wchan {
+			c.WriteString(s+"\n") 
+			c.Flush() 
 		}
 	}()
  }
@@ -62,16 +62,16 @@ func (r *room) AddClient(c net.Conn) {
 	r.Lock()
 	wchan := StartClient(r.Msgchan,c)
 	//define keys for the clients map
-	r.clients[wchan]=struct{}{} // this will trigger the check for wc value in the for range in 1
+	r.clients[wchan]=struct{}{} 
 	r.Unlock()
 }
 
 func CreateRoom(name string) *room {
 	r:=&room{
 		name: name,
-		Msgchan: make(chan string), //initialize the msg ch
+		Msgchan: make(chan string), 
 		Mutex: new(sync.Mutex),
-		clients: make(map[chan<- string]struct{}),// initialize clients map or set
+		clients: make(map[chan<- string]struct{}),
 	}
 
 	r.Run()
@@ -95,14 +95,14 @@ func main(){
 	}
 
 	for {
-		//the accept function will make the run function a blocking function as it waits for incoming connection and wait for the for loop to break
+		
 		conn, err:=l.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection from chat client",err)
 			break
 		}
 
-		//use go routine to handle connection so it doesn't affect or disturb the for loop
+		
 		go handleConnection(r,conn)
 	}
 }
